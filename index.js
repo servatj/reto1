@@ -1,5 +1,6 @@
 const BASE_URL = 'https://rickandmortyapi.com/api'
 
+let urlNextPage;
 
 const init = async () => {
   const characters = await getCharacters();
@@ -9,6 +10,23 @@ const init = async () => {
 
 window.onload = () => {
   init();
+}
+
+window.addEventListener('scroll', () => {
+  const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+  if ( scrollTop + scrollHeight > scrollHeight - 600) {
+    nextPage();
+  }
+})
+
+const nextPage = async () => {
+  if(urlNextPage !== null) {
+    const data = await fetch(urlNextPage);
+    const dataToJson = await data.json();
+    parseData(dataToJson);
+  } else {
+    console.log('End scroll')
+  }
 }
 
 const getCharacters = async () => {
@@ -37,4 +55,5 @@ const parseData = (data) => {
       orign: character.origin
     })
   })
+  urlNextPage = data.info.next;
 }
